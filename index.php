@@ -1,88 +1,66 @@
 <?php
 
-$month = 12; //date('n');
-$year = date('Y');
+function calendar($month,$year){
+  if($month == NULL){$month = date("n");}
+  if($year == NULL){$year = date("Y");}
 
-$leading_month = $month - 1;
-$following_month = $month + 1;
-$following_year = $year;
-$leading_year = $year;
+  echo '
+  <table>
+    <th>Monday</th>
+    <th>Tuesday</th>
+    <th>Wednesday</th>
+    <th>Thursday</th>
+    <th>Friday</th>
+    <th>Saturday</th>
+    <th>Sunday</th>
+    <tr>
+  ';
 
-$mini_dayofweek = array('M','T','W','T','F','S','S');
+  $weekstart = date('N',mktime(0,0,0,$month,1,$year));
+  $create_month = date('t',mktime(0,0,0,$month,1,$year));
 
-$weekstart = date('N',mktime(0,0,0,$month,1,$year));
-$create_month = date('t',mktime(0,0,0,$month,1,$year));
+  if($weekstart > 1){
+    //populate gaps with days from previous month
+    $prev_month_modif = $weekstart - 1;
+    $prev_month_day = date('j',mktime(0,0,0,$month,(1-$prev_month_modif),$year));
+    $prev_month_maxdays = date('t',mktime(0,0,0,$month,(1-$prev_month_modif),$year));
 
-$month_before = date('t',mktime(0,0,0,$leading_month,1,$year));
-$weekstart_before = date('N',mktime(0,0,0,$leading_month,1,$year));
-
-$month_after = date('t',mktime(0,0,0,$following_month,1,$year));
-$weekstart_after = date('N',mktime(0,0,0,$following_month,1,$year));
-
-if($following_month == 13) {
-  $following_year = $year + 1;
-  $following_month = 1;
-}
-if($leading_month == 0) {
-  $leading_year = $year - 1;
-  $leading_month = 12;
-}
-
-foreach($mini_dayofweek as $day){
-  //echo $day;
-}
-
-echo $leading_month,' ',$leading_year;
-
-echo '<br><br>';
-
-for($x = 1; $x <= $month_before; $x++) {
-  echo $x,' ';
-
-  if($weekstart_before == 7) {
-    $weekstart_before = 1;
-    echo '<br>';
-  } else {
-    $weekstart_before++;
+    for($x = $prev_month_day; $x <= $prev_month_maxdays; $x++) {
+      echo '<td style="background-color: #999999;">'.$x.'</td>';
+    }
   }
-}
 
+  //build this month
+  for($x = 1; $x <= $create_month; $x++) {
+    echo '<td>'.$x.'</td>';
 
-echo '<br><br>';
-
-echo $month,' ',$year;
-
-echo '<br><br>';
-
-for($x = 1; $x <= $create_month; $x++) {
-  echo $x,' ';
-
-  if($weekstart == 7) {
-    $weekstart = 1;
-    echo '<br>';
-  } else {
-    $weekstart++;
+    if($weekstart == 7) {
+      $weekstart = 1;
+      echo '</tr>';
+    } else {
+      $weekstart++;
+    }
   }
-}
 
-echo '<br><br>';
-
-echo $following_month,' ',$following_year;
-
-echo '<br><br>';
-
-for($x = 1; $x <= $month_after; $x++) {
-  echo $x,' ';
-
-  if($weekstart_after == 7) {
-    $weekstart_after = 1;
-    echo '<br>';
+  if($weekstart < 7){
+    //populate gaps with days from next month
+    for($x = 1; $weekstart <= 7; $x++) {
+      echo '<td style="background-color: #999999;">'.$x.'</td>';
+      $weekstart++;
+    }
+    echo '</tr>';
   } else {
-    $weekstart_after++;
+    //last row ended perfectly on sunday
+    echo '</tr>';
   }
+
+  echo '</table>';
+
 }
 
 
+
+
+calendar();
 
 ?>
-
